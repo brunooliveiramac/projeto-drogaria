@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/template/modeloGeral.xhtml">
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="proacao" value="#{produtoBean.acao}"></f:viewParam>
+			<f:viewParam name="proCodigo" value="#{produtoBean.codigo}"></f:viewParam>
+			<f:event listener="#{produtoBean.carregarcadastro}" type="preRenderView"></f:event>
+		</f:metadata>
+	</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="frmCadPro">
+
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="Produtos" />
+				</f:facet>
+			</p:toolbar>
+
+			<h:panelGrid columns="2" id="pnlPro">
+				<p:outputLabel value="Código:" />
+				<p:outputLabel size="30"
+			   value="#{produtoBean.produtoCadastro.codigo}" />
+
+				<p:outputLabel value="Descrição:" />
+				<p:inputText maxlength="50" size="30"
+						value="#{produtoBean.produtoCadastro.descricao}"
+					    readonly="#{produtoBean.acao == 'Excluir'}">
+					<f:validateBean/>	
+				</p:inputText>
+				
+				
+				<p:outputLabel value="Preço:" />
+				<p:inputText maxlength="50" size="30"
+						value="#{produtoBean.produtoCadastro.preco}"
+					    readonly="#{produtoBean.acao == 'Excluir'}">
+					<f:validateBean/>	
+				</p:inputText>
+				
+				<p:outputLabel value="Quantidade:" />
+				<p:inputText maxlength="50" size="30"
+						value="#{produtoBean.produtoCadastro.quantidade}"
+					    readonly="#{produtoBean.acao == 'Excluir'}">
+					<f:validateBean/>	
+				</p:inputText>
+				
+				<p:outputLabel value="Fabricante"/>
+				<p:selectOneMenu value="#{produtoBean.produtoCadastro.fabricante}"
+				converter="fabricanteConverter">
+					<f:selectItem itemValue="" itemLabel="Selecione"/>
+					<f:selectItems value="#{produtoBean.listaFabricante}" var="fabricante" itemValue="#{fabricante}"
+					itemLabel="#{fabricante.descricao}" />
+					<!--Item Value: obj dentro da lista  -->
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+
+			<h:panelGrid columns="4">
+				
+				<p:commandButton value="Salvar"
+					actionListener="#{produtoBean.salvar}"
+					update=":msgGlobal :frmCadPro:pnlPro" 
+					rendered="#{produtoBean.acao == 'Novo'}"/>
+				<p:commandButton value="Editar" actionListener="#{produtoBean.editar}"
+					update=":msgGlobal :frmCadPro:pnlPro" 
+				    rendered="#{produtoBean.acao == 'Editar'}"/>
+				<p:commandButton value="Excluir" actionListener="#{produtoBean.excluir}"
+					update=":msgGlobal :frmCadPro:pnlPro" 
+				    rendered="#{produtoBean.acao == 'Excluir'}"/>
+				<p:button value="Voltar" outcome="/pages/produtoPesquisa.xhtml" />
+
+			</h:panelGrid>
+		</h:form>
+
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/template/modeloGeral.xhtml">
+	<ui:define name="metadata" >
+		<f:event listener="#{vendaBean.carregarProdutos}" type="preRenderView"></f:event>
+	</ui:define>
+
+
+	<ui:define name="conteudo">
+
+		<h:form id="frmVenda">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="Vendas" />
+				</f:facet>
+			</p:toolbar>
+			
+			<p:separator/>
+			
+				<p:dataTable emptyMessage="Nenhum Registro Encontrado"
+				filteredValue="#{vendaBean.listaProdutosFiltrados}"
+				value="#{vendaBean.listaProduto}" var="produtoCursor"
+				rows="3" paginator="true">
+				
+
+				<p:column headerText="Cod"
+					style="text-align: center; width: 20px">
+					<h:outputText value="#{produtoCursor.codigo}" />
+				</p:column>
+
+
+				<p:column headerText="Descrição"
+					filterBy="#{produtoCursor.descricao}"
+					sortBy="#{produtoCursor.descricao}"
+					style="text-align: center; width: 150px">
+					<h:outputText value="#{produtoCursor.descricao}" />
+				</p:column>
+				
+				<p:column headerText="Preço"
+					style="text-align: center; width: 80px">
+					<h:outputText value="#{produtoCursor.preco}" />
+				</p:column>
+				
+				<p:column headerText="Quantidade"
+					style="text-align: center; width: 50px">
+					<h:outputText value="#{produtoCursor.quantidade}" />
+				</p:column>
+				
+				<p:column headerText="Fabricante"
+					style="text-align: center; width: 80px">
+					<h:outputText value="#{produtoCursor.fabricante}" />
+				</p:column>
+				
+
+				<p:column headerText="Opções" 	style="width: 100px; text-align: center">
+					<p:commandButton value="Adicionar" actionListener="#{vendaBean.adicionar(produtoCursor)}"
+					update=":frmVenda:tblItens :frmVenda:txtVendaTotal"/>
+					<!-- ActionListener: para quando eu nao quero mudar de tela -->
+				</p:column>
+			</p:dataTable>
+
+		<p:separator/>
+		
+		<p:dataTable id="tblItens" emptyMessage="Nenhum Registro Encontrado"
+				value="#{vendaBean.listaItens}" var="itemCursor"
+				rows="5" paginator="true">
+				
+
+				<p:column headerText="Produto"
+					style="text-align: center; width: 80px">
+					<h:outputText value="#{itemCursor.produto.descricao}" />
+				</p:column>
+				
+				<p:column headerText="Fabricante"
+					style="text-align: center; width: 80px">
+					<h:outputText value="#{itemCursor.produto.fabricante.descricao}" />
+				</p:column>
+
+				<p:column headerText="Quantidade"
+					style="text-align: center; width: 50px">
+					<h:outputText value="#{itemCursor.quantidade}" />
+				</p:column>
+				
+				<p:column headerText="Valor Parcial"
+					style="text-align: center; width: 80px">
+					<h:outputText value="#{itemCursor.valor}" />
+				</p:column>
+				
+
+				<p:column headerText="Opções" 	style="width: 100px; text-align: center">
+					<p:commandButton value="Remover" actionListener="#{vendaBean.remover(itemCursor)}"
+						update=":frmVenda:tblItens :frmVenda:txtVendaTotal"/>
+				</p:column>
+				</p:dataTable>
+		
+			<h:panelGrid columns="1">
+							<h:outputText id="txtVendaTotal" value="Valor total:#{vendaBean.vendaCadastro.valor}"/>
+							<p:commandButton value="Finalizar Venda" 
+							actionListener="#{vendaBean.carregarDadosVenda}" oncomplete="PF ('DlgVenda').show();" 
+							update=":frmDlg:pnlVenda"/>
+							<!-- OnClick: para JavaScript PF: Primefaces OnComplete: abre após a finalização de outra operação -->
+			</h:panelGrid>
+		
+			<p:separator/>
+			
+		
+	</h:form>
+			
+			<p:dialog closable="true" draggable="true" modal="true" resizable="false"
+			 header="Finalizar Venda" widgetVar="DlgVenda" appendTo="@(body)">
+				<h:form id="frmDlg">
+					<h:panelGrid  id="pnlVenda" columns="2">
+					
+						<h:outputText value="Horario:"/>
+							<h:outputText value="#{vendaBean.vendaCadastro.horario}">
+								<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo"/>
+							</h:outputText>
+							
+						<h:outputText value="Funcionario:"/>
+							<h:outputText value="#{vendaBean.vendaCadastro.funcionario.nome	}"/>
+							
+						<h:outputText value="Valor Total:"/>
+							<h:outputText value="#{vendaBean.vendaCadastro.valor}"/>
+						
+					</h:panelGrid> 
+					
+					<h:panelGrid columns="2">
+						<p:commandButton value="Finalizar Venda"
+						actionListener="#{vendaBean.salvar}" update=":msgGlobal :frmVenda:tblItens
+						:frmVenda:txtVendaTotal"
+						oncomplete="PF ('DlgVenda').hide();"/>
+						<p:commandButton value="Voltar" onclick="PF ('DlgVenda').hide();"/>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+			
+				
+	</ui:define>
+
+</ui:composition>
+</html>
+
+
